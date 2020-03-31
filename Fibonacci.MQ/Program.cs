@@ -21,7 +21,7 @@ namespace Fibonacci.MQ
         private const string RABBIT_USER = "guest";
         private const string RABBIT_PASS = "guest";
 
-        private const string QUEUE_NAME = "FibonacciTopic";
+        private const string QUEUE_NAME = "Fibonacci";
         private const string TOPIC_NAME = "FibonacciTopic";
 
         private static IBus _bus;
@@ -32,6 +32,12 @@ namespace Fibonacci.MQ
 
             try
             {
+                var client = new ManagementClient(RABBIT_URI, RABBIT_USER, RABBIT_PASS);
+                var queues = await client.GetQueuesAsync();
+                var queue = queues.FirstOrDefault(i => i.Name.Contains(QUEUE_NAME));
+                if (queue != null)
+                    await client.PurgeAsync(queue);
+
                 _bus = RabbitHutch.CreateBus("host=localhost");
                 _bus.SubscribeAsync<string>(TOPIC_NAME, OnReceiveFibonacciMessage);
 
