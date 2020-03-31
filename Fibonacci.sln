@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fibonacci.REST", "Fibonacci
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fibonacci.MQ", "Fibonacci.MQ\Fibonacci.MQ.csproj", "{53B676A5-1F02-4C7A-9471-26E6C27AF9F3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fibonacci.Core", "Fibonacci.Core\Fibonacci.Core.csproj", "{ABB41ADE-5B2A-4872-8D66-729B49F60C18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{53B676A5-1F02-4C7A-9471-26E6C27AF9F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53B676A5-1F02-4C7A-9471-26E6C27AF9F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53B676A5-1F02-4C7A-9471-26E6C27AF9F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABB41ADE-5B2A-4872-8D66-729B49F60C18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABB41ADE-5B2A-4872-8D66-729B49F60C18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABB41ADE-5B2A-4872-8D66-729B49F60C18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABB41ADE-5B2A-4872-8D66-729B49F60C18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
