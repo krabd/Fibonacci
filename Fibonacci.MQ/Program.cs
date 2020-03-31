@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -22,8 +23,6 @@ namespace Fibonacci.MQ
         private const string RABBIT_PASS = "guest";
 
         private const string QUEUE_NAME = "Fibonacci";
-        private const string TOPIC_NAME = "FibonacciTopic";
-        private const string TOPIC_PAR_NAME = "FibonacciParTopic";
 
         private static IBus _bus;
 
@@ -37,8 +36,8 @@ namespace Fibonacci.MQ
                 await Task.WhenAll(queuePurgeTasks.Where(t => t != null));
 
                 _bus = RabbitHutch.CreateBus("host=localhost");
-                _bus.SubscribeAsync<string>(TOPIC_NAME, OnReceiveFibonacciMessage);
-                _bus.SubscribeAsync<string>(TOPIC_PAR_NAME, OnReceiveFibonacciParMessage);
+                _bus.SubscribeAsync<string>(ConfigurationManager.AppSettings.Get("mainTopicName"), OnReceiveFibonacciMessage);
+                _bus.SubscribeAsync<string>(ConfigurationManager.AppSettings.Get("startTopicName"), OnReceiveFibonacciParMessage);
             }
             catch (Exception e)
             {

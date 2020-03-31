@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Web.Configuration;
 using System.Web.Http;
 using EasyNetQ;
 using Fibonacci.REST.Models;
@@ -9,15 +10,12 @@ namespace Fibonacci.REST.Controllers
 {
     public class FibonacciController : ApiController
     {
-        private const string TOPIC_NAME = "FibonacciTopic";
-        private const string TOPIC_PAR_NAME = "FibonacciParTopic";
-
         [HttpGet]
         public string Get()
         {
             using (var bus = RabbitHutch.CreateBus("host=localhost"))
             {
-                bus.Publish("5", TOPIC_PAR_NAME);
+                bus.Publish("5", WebConfigurationManager.AppSettings["startTopicName"]);
             }
             return "I am Live";
         }
@@ -42,7 +40,7 @@ namespace Fibonacci.REST.Controllers
                 Debug.WriteLine($"Prev = {message.Prev}, Current = {message.Current}");
 
                 var json = JsonConvert.SerializeObject(message);
-                bus.Publish(json, TOPIC_NAME);
+                bus.Publish(json, WebConfigurationManager.AppSettings["mainTopicName"]);
             }
         }
     }
