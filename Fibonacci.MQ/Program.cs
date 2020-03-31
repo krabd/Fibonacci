@@ -23,25 +23,22 @@ namespace Fibonacci.MQ
 
         private const string QUEUE_NAME = "Fibonacci";
         private const string TOPIC_NAME = "FibonacciTopic";
+        private const string TOPIC_PAR_NAME = "FibonacciParTopic";
 
         private static IBus _bus;
 
         static async Task Main(string[] args)
         {
-            Console.ReadLine();
-
             try
             {
                 var client = new ManagementClient(RABBIT_URI, RABBIT_USER, RABBIT_PASS);
                 var queues = await client.GetQueuesAsync();
-                var queue = queues.FirstOrDefault(i => i.Name.Contains(QUEUE_NAME));
-                if (queue != null)
-                    await client.PurgeAsync(queue);
+                var queuePurgeTasks = queues.Where(i => i.Name.Contains(QUEUE_NAME)).Select(i => client.PurgeAsync(i));
+                await Task.WhenAll(queuePurgeTasks.Where(t => t != null));
 
                 _bus = RabbitHutch.CreateBus("host=localhost");
                 _bus.SubscribeAsync<string>(TOPIC_NAME, OnReceiveFibonacciMessage);
-
-                await SendResultToApiAsync(null);
+                _bus.SubscribeAsync<string>(TOPIC_PAR_NAME, OnReceiveFibonacciParMessage);
             }
             catch (Exception e)
             {
@@ -64,6 +61,20 @@ namespace Fibonacci.MQ
                 Console.WriteLine($"Prev = {result.Prev}. Current = {result.Current}");
 
                 await SendResultToApiAsync(fibonacciMessage);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+        }
+
+        private static async Task OnReceiveFibonacciParMessage(string arg)
+        {
+            try
+            {
+                var count = Convert.ToInt32(arg);
+
+                await SendResultToApiAsync(new FibonacciMessage{Prev = 0, Current = 0});
             }
             catch (Exception e)
             {

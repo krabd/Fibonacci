@@ -10,32 +10,34 @@ namespace Fibonacci.REST.Controllers
     public class FibonacciController : ApiController
     {
         private const string TOPIC_NAME = "FibonacciTopic";
+        private const string TOPIC_PAR_NAME = "FibonacciParTopic";
 
         [HttpGet]
         public string Get()
         {
+            using (var bus = RabbitHutch.CreateBus("host=localhost"))
+            {
+                bus.Publish("5", TOPIC_PAR_NAME);
+            }
             return "I am Live";
         }
 
         [HttpPost]
         public void Start([FromBody] FibonacciMessage value)
         {
+            Publish(value);
+        }
+
+        private void Publish(FibonacciMessage value)
+        {
             using (var bus = RabbitHutch.CreateBus("host=localhost"))
             {
                 var message = new FibonacciMessage();
 
-                if (value is null)
-                {
-                    message.Prev = 0;
-                    message.Current = 1;
-                }
-                else
-                {
-                    var prev = value.Prev;
-                    var current = value.Current;
-                    message.Prev = current;
-                    message.Current = current + prev;
-                }
+                var prev = value.Prev;
+                var current = value.Current == 0 ? 1 : value.Current;
+                message.Prev = current;
+                message.Current = current + prev;
 
                 Debug.WriteLine($"Prev = {message.Prev}, Current = {message.Current}");
 
