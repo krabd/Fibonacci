@@ -1,6 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using EasyNetQ;
 using Fibonacci.DataAccess.Interfaces;
+using Newtonsoft.Json;
 
 namespace Fibonacci.DataAccess.Repositories
 {
@@ -13,9 +15,13 @@ namespace Fibonacci.DataAccess.Repositories
             _rabbitSettings = rabbitSettings;
         }
 
-        public Task SendNextNumberAsync(ulong number, CancellationToken token = default)
+        public async Task SendNextNumberAsync(ulong number, CancellationToken token = default)
         {
-            throw new System.NotImplementedException();
+            using (var bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString))
+            {
+                var content = JsonConvert.SerializeObject(number);
+                bus.Publish(content, _rabbitSettings.MainTopicName);
+            }
         }
     }
 }

@@ -1,46 +1,43 @@
-﻿using System.Diagnostics;
-using System.Web.Configuration;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using EasyNetQ;
-using Fibonacci.REST.Models;
+using Fibonacci.Core.Interfaces;
+using Fibonacci.DataAccess.Interfaces;
 using Newtonsoft.Json;
 
 namespace Fibonacci.REST.Controllers
 {
     public class FibonacciController : ApiController
     {
-        [HttpGet]
-        public string Get()
+        private readonly IRabbitSettings _rabbitSettings;
+        private readonly ISessionSettings _sessionSettings;
+        private readonly IFibonacciService _fibonacciService;
+
+        public FibonacciController(IRabbitSettings rabbitSettings, ISessionSettings sessionSettings, IFibonacciService fibonacciService)
         {
-            using (var bus = RabbitHutch.CreateBus("host=localhost"))
+            _rabbitSettings = rabbitSettings;
+            _sessionSettings = sessionSettings;
+            _fibonacciService = fibonacciService;
+        }
+
+        [HttpGet]
+        public string Get([FromUri] int count)
+        {
+            _sessionSettings.ParallelCount = count;
+
+            using (var bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString))
             {
-                bus.Publish("5", WebConfigurationManager.AppSettings["startTopicName"]);
+                bus.Publish(count.ToString(), _rabbitSettings.StartTopicName);
             }
+
             return "I am Live";
         }
 
         [HttpPost]
-        public void Start([FromBody] FibonacciMessage value)
+        public async Task Start([FromBody] string value)
         {
-            Publish(value);
-        }
-
-        private void Publish(FibonacciMessage value)
-        {
-            using (var bus = RabbitHutch.CreateBus("host=localhost"))
-            {
-                var message = new FibonacciMessage();
-
-                var prev = value.Prev;
-                var current = value.Current == 0 ? 1 : value.Current;
-                message.Prev = current;
-                message.Current = current + prev;
-
-                Debug.WriteLine($"Prev = {message.Prev}, Current = {message.Current}");
-
-                var json = JsonConvert.SerializeObject(message);
-                bus.Publish(json, WebConfigurationManager.AppSettings["mainTopicName"]);
-            }
+            var currentNumber = JsonConvert.DeserializeObject<ulong>(value);
+            await _fibonacciService.ProcessNextNumberAsync(currentNumber);
         }
     }
 }

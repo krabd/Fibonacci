@@ -1,9 +1,9 @@
 ﻿using System;
 using Fibonacci.Core;
-using Fibonacci.MQ.Services;
+using Fibonacci.REST.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fibonacci.MQ
+namespace Fibonacci.REST
 {
     public class StartupService
     {
@@ -11,7 +11,7 @@ namespace Fibonacci.MQ
         {
             var services = new ServiceCollection();
 
-            services.AddTransient<MainService>();
+            services.AddTransient<FibonacciController>();
             services.ConfigureCore();
 
             return services;

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
 using Fibonacci.Core.Interfaces;
@@ -10,21 +8,19 @@ using Newtonsoft.Json;
 
 namespace Fibonacci.MQ.Services
 {
-    public class FibonacciService : IDisposable
+    public class MainService : IDisposable
     {
         private readonly IRabbitSettings _rabbitSettings;
-        private readonly IFibonacciRepository _fibonacciRepository;
-        private readonly ICalculateFibonacciService _calculateService;
         private readonly ISessionSettings _sessionSettings;
+        private readonly IFibonacciService _fibonacciService;
 
         private IBus _bus;
 
-        public FibonacciService(IRabbitSettings rabbitSettings, IFibonacciRepository fibonacciRepository, ICalculateFibonacciService calculateService, ISessionSettings sessionSettings)
+        public MainService(IRabbitSettings rabbitSettings, ISessionSettings sessionSettings, IFibonacciService fibonacciService)
         {
             _rabbitSettings = rabbitSettings;
-            _fibonacciRepository = fibonacciRepository;
-            _calculateService = calculateService;
             _sessionSettings = sessionSettings;
+            _fibonacciService = fibonacciService;
         }
 
         public void Start()
@@ -48,7 +44,7 @@ namespace Fibonacci.MQ.Services
             {
                 _sessionSettings.ParallelCount = Convert.ToInt32(message);
 
-                await ProcessNextNumberAsync(1);
+                await _fibonacciService.ProcessNextNumberAsync(1);
             }
             catch (Exception e)
             {
@@ -61,25 +57,12 @@ namespace Fibonacci.MQ.Services
             try
             {
                 var currentNumber = JsonConvert.DeserializeObject<ulong>(message);
-                await ProcessNextNumberAsync(currentNumber);
+                await _fibonacciService.ProcessNextNumberAsync(currentNumber);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
-        }
-
-        private async Task ProcessNextNumberAsync(ulong currentNumber, CancellationToken token = default)
-        {
-            var calculateTasks = Enumerable.Range(0, _sessionSettings.ParallelCount).Select(i =>
-                _calculateService.CalculateNextNumberAsync(_sessionSettings.LastNumber, currentNumber, token)).ToList();
-
-            await Task.WhenAll(calculateTasks);
-
-            Console.WriteLine($"Prev = {currentNumber}. Current = {_sessionSettings.LastNumber}");
-
-            _sessionSettings.LastNumber = calculateTasks.First().Result;
-            await _fibonacciRepository.SendNextNumberAsync(_sessionSettings.LastNumber, token);
         }
 
         public void Dispose()

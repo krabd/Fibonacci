@@ -15,7 +15,7 @@ namespace Fibonacci.MQ
 {
     class Program
     {
-        private static FibonacciService _fibonacciService;
+        private static MainService _mainService;
 
         static async Task Main(string[] args)
         {
@@ -54,8 +54,8 @@ namespace Fibonacci.MQ
                 Debug.WriteLine(e);
             }
 
-            _fibonacciService = provider.Resolve<FibonacciService>();
-            _fibonacciService.Start();
+            _mainService = provider.Resolve<MainService>();
+            _mainService.Start();
         }
     }
 }
