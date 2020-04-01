@@ -10,8 +10,6 @@ namespace Fibonacci.Core
         {
             services.AddTransient<ICalculateFibonacciService, CalculateFibonacciService>();
             services.AddTransient<IFibonacciService, FibonacciService>();
-
-            services.AddSingleton<ISessionSettings, SessionSettings>();
             
             return services;
         }

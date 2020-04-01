@@ -26,8 +26,7 @@ namespace Fibonacci.MQ
             {
                 var rabbitSettings = new RabbitSettings();
                 rabbitSettings.Set(ConfigurationManager.AppSettings.Get("rabbitConnectionString"),
-                    ConfigurationManager.AppSettings.Get("startTopicName"),
-                    ConfigurationManager.AppSettings.Get("mainTopicName"));
+                    ConfigurationManager.AppSettings.Get("startTopicName"));
                 return rabbitSettings;
             });
 
@@ -46,7 +45,9 @@ namespace Fibonacci.MQ
                     ConfigurationManager.AppSettings.Get("rabbitUser"),
                     ConfigurationManager.AppSettings.Get("rabbitPass"));
                 var queues = await client.GetQueuesAsync();
-                var queuePurgeTasks = queues.Where(i => i.Name.Contains("Fibonacci")).Select(i => client.PurgeAsync(i));
+                var queuePurgeTasks = queues
+                    .Where(i => i.Name.Contains("Fibonacci"))
+                    .Select(i => client.PurgeAsync(i));
                 await Task.WhenAll(queuePurgeTasks.Where(t => t != null));
             }
             catch (Exception e)

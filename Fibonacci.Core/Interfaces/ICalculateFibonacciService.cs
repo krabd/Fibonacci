@@ -5,6 +5,6 @@ namespace Fibonacci.Core.Interfaces
 {
     public interface ICalculateFibonacciService
     {
-        Task<ulong> CalculateNextNumberAsync(ulong previousNumber, ulong currentNumber, CancellationToken token = default);
+        Task<ulong> CalculateNextNumberAsync(ulong currentNumber, CancellationToken token = default);
     }
 }

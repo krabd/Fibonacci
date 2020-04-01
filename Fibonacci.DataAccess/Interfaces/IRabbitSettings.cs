@@ -5,7 +5,5 @@
         string ConnectionString { get; }
 
         string StartTopicName { get; }
-
-        string MainTopicName { get; }
     }
 }

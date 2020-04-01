@@ -20,7 +20,7 @@ namespace Fibonacci.DataAccess.Repositories
             using (var bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString))
             {
                 var content = JsonConvert.SerializeObject(number);
-                bus.Publish(content, _rabbitSettings.MainTopicName);
+                await bus.PublishAsync(content, x => x.WithTopic($"{_rabbitSettings.StartTopicName}.*"));
             }
         }
     }

@@ -60,11 +60,9 @@
     <Compile Include="Extensions\ServiceProviderExtensions.cs" />
     <Compile Include="Interfaces\ICalculateFibonacciService.cs" />
     <Compile Include="Interfaces\IFibonacciService.cs" />
-    <Compile Include="Interfaces\ISessionSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CalculateFibonacciService.cs" />
     <Compile Include="Services\FibonacciService.cs" />
-    <Compile Include="Services\SessionSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

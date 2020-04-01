@@ -8,13 +8,10 @@ namespace Fibonacci.DataAccess.Models
 
         public string StartTopicName { get; private set; }
 
-        public string MainTopicName { get; private set; }
-
-        public void Set(string connectionString, string startTopicName, string mainTopicName)
+        public void Set(string connectionString, string startTopicName)
         {
             ConnectionString = connectionString;
             StartTopicName = startTopicName;
-            MainTopicName = mainTopicName;
         }
     }
 }

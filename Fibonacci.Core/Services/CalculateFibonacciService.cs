@@ -6,10 +6,12 @@ namespace Fibonacci.Core.Services
 {
     public class CalculateFibonacciService : ICalculateFibonacciService
     {
-        public async Task<ulong> CalculateNextNumberAsync(ulong previousNumber, ulong currentNumber, CancellationToken token = default)
+        public Task<ulong> CalculateNextNumberAsync(ulong currentNumber, CancellationToken token = default)
         {
-            return previousNumber 
-                + currentNumber != 0 ? currentNumber : 1;
+            return Task.Run<ulong>(() =>
+            {
+                return 1;
+            }, token);
         }
     }
 }

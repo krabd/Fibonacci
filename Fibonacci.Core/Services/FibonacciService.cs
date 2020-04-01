@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Fibonacci.Core.Interfaces;
@@ -11,27 +10,20 @@ namespace Fibonacci.Core.Services
     {
         private readonly IFibonacciRepository _fibonacciRepository;
         private readonly ICalculateFibonacciService _calculateService;
-        private readonly ISessionSettings _sessionSettings;
 
-        public FibonacciService(IFibonacciRepository fibonacciRepository, ICalculateFibonacciService calculateService, ISessionSettings sessionSettings)
+        public FibonacciService(IFibonacciRepository fibonacciRepository, ICalculateFibonacciService calculateService)
         {
             _fibonacciRepository = fibonacciRepository;
             _calculateService = calculateService;
-            _sessionSettings = sessionSettings;
         }
 
         public async Task ProcessNextNumberAsync(ulong currentNumber, CancellationToken token = default)
         {
-            var calculateTasks = Enumerable.Range(0, _sessionSettings.ParallelCount).Select(i =>
-                _calculateService.CalculateNextNumberAsync(_sessionSettings.LastNumber, currentNumber, token)).ToList();
+            var newNumber  = await _calculateService.CalculateNextNumberAsync(currentNumber, token);
 
-            await Task.WhenAll(calculateTasks);
+            Console.WriteLine($"Prev = {currentNumber}. Current = {newNumber}");
 
-            _sessionSettings.LastNumber = calculateTasks.First().Result;
-
-            Console.WriteLine($"Prev = {currentNumber}. Current = {_sessionSettings.LastNumber}");
-
-            await _fibonacciRepository.SendNextNumberAsync(_sessionSettings.LastNumber, token);
+            await _fibonacciRepository.SendNextNumberAsync(newNumber, token);
         }
     }
 }

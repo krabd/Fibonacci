@@ -1,6 +1,5 @@
 ﻿using System;
 using Fibonacci.Core;
-using Fibonacci.DataAccess;
 using Fibonacci.REST.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +13,6 @@ namespace Fibonacci.REST
 
             services.AddTransient<FibonacciController>();
             services.ConfigureCore();
-            services.ConfigureDataAccess();
 
             return services;
         }

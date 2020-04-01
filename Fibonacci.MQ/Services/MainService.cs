@@ -11,15 +11,14 @@ namespace Fibonacci.MQ.Services
     public class MainService : IDisposable
     {
         private readonly IRabbitSettings _rabbitSettings;
-        private readonly ISessionSettings _sessionSettings;
         private readonly IFibonacciService _fibonacciService;
 
         private IBus _bus;
+        private ISubscriptionResult _startSubscription;
 
-        public MainService(IRabbitSettings rabbitSettings, ISessionSettings sessionSettings, IFibonacciService fibonacciService)
+        public MainService(IRabbitSettings rabbitSettings, IFibonacciService fibonacciService)
         {
             _rabbitSettings = rabbitSettings;
-            _sessionSettings = sessionSettings;
             _fibonacciService = fibonacciService;
         }
 
@@ -29,22 +28,7 @@ namespace Fibonacci.MQ.Services
             {
                 _bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString);
 
-                _bus.SubscribeAsync<string>(_rabbitSettings.StartTopicName, OnReceiveFibonacciParallelCountAsync);
-                _bus.SubscribeAsync<string>(_rabbitSettings.MainTopicName, OnReceiveFibonacciMessageAsync);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-        }
-
-        private async Task OnReceiveFibonacciParallelCountAsync(string message)
-        {
-            try
-            {
-                _sessionSettings.ParallelCount = Convert.ToInt32(message);
-
-                await _fibonacciService.ProcessNextNumberAsync(1);
+                _startSubscription = _bus.SubscribeAsync<string>("Fibonacci", OnReceiveFibonacciMessageAsync, x => x.WithTopic($"{_rabbitSettings.StartTopicName}.*"));
             }
             catch (Exception e)
             {
@@ -68,6 +52,7 @@ namespace Fibonacci.MQ.Services
         public void Dispose()
         {
             _bus?.Dispose();
+            _startSubscription?.Dispose();
         }
     }
 }

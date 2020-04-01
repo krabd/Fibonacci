@@ -69,13 +69,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configurator.cs" />
     <Compile Include="Interfaces\IFibonacciRepository.cs" />
-    <Compile Include="Interfaces\IFibonacciSettingsRepository.cs" />
     <Compile Include="Interfaces\IRabbitSettings.cs" />
     <Compile Include="Models\RabbitSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\FibonacciSettingsRepository.cs" />
     <Compile Include="Repositories\RabbitFibonacciRepository.cs" />
     <Compile Include="Repositories\RestFibonacciRepository.cs" />
   </ItemGroup>

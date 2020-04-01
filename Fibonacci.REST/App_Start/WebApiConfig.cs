@@ -23,8 +23,7 @@ namespace Fibonacci.REST
             {
                 var rabbitSettings = new RabbitSettings();
                 rabbitSettings.Set(WebConfigurationManager.AppSettings.Get("rabbitConnectionString"),
-                    WebConfigurationManager.AppSettings.Get("startTopicName"),
-                    WebConfigurationManager.AppSettings.Get("mainTopicName"));
+                    WebConfigurationManager.AppSettings.Get("startTopicName"));
                 return rabbitSettings;
             });
 
