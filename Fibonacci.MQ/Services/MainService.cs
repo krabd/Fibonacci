@@ -27,7 +27,6 @@ namespace Fibonacci.MQ.Services
             try
             {
                 _bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString);
-
                 _startSubscription = _bus.SubscribeAsync<string>("Fibonacci", OnReceiveFibonacciMessageAsync, x => x.WithTopic($"{_rabbitSettings.StartTopicName}.*"));
             }
             catch (Exception e)

@@ -16,10 +16,10 @@ namespace Fibonacci.REST.Controllers
         }
 
         [HttpGet]
-        public async Task Get([FromUri] int count)
+        public Task Get([FromUri] int count)
         {
             var startTasks = Enumerable.Range(0, count).Select(i => _fibonacciService.ProcessNextNumberAsync(0));
-            await Task.WhenAll(startTasks);
+            return Task.WhenAll(startTasks);
         }
 
         [HttpPost]
