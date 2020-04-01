@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using EasyNetQ;
 using Fibonacci.Core.Interfaces;
 using Fibonacci.DataAccess.Interfaces;
 using Newtonsoft.Json;
@@ -9,28 +8,24 @@ namespace Fibonacci.REST.Controllers
 {
     public class FibonacciController : ApiController
     {
-        private readonly IRabbitSettings _rabbitSettings;
         private readonly ISessionSettings _sessionSettings;
         private readonly IFibonacciService _fibonacciService;
+        private readonly IFibonacciSettingsRepository _fibonacciSettingsRepository;
 
-        public FibonacciController(IRabbitSettings rabbitSettings, ISessionSettings sessionSettings, IFibonacciService fibonacciService)
+        public FibonacciController(ISessionSettings sessionSettings, IFibonacciService fibonacciService, IFibonacciSettingsRepository fibonacciSettingsRepository)
         {
-            _rabbitSettings = rabbitSettings;
             _sessionSettings = sessionSettings;
             _fibonacciService = fibonacciService;
+            _fibonacciSettingsRepository = fibonacciSettingsRepository;
         }
 
         [HttpGet]
         public string Get([FromUri] int count)
         {
             _sessionSettings.ParallelCount = count;
+            _fibonacciSettingsRepository.SetParallelCountAsync(count);
 
-            using (var bus = RabbitHutch.CreateBus(_rabbitSettings.ConnectionString))
-            {
-                bus.Publish(count.ToString(), _rabbitSettings.StartTopicName);
-            }
-
-            return "I am Live";
+            return $"Count has been set ({count})";
         }
 
         [HttpPost]

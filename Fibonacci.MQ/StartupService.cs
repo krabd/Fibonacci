@@ -1,5 +1,6 @@
 ﻿using System;
 using Fibonacci.Core;
+using Fibonacci.DataAccess;
 using Fibonacci.MQ.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ namespace Fibonacci.MQ
 
             services.AddTransient<MainService>();
             services.ConfigureCore();
+            services.ConfigureDataAccess();
 
             return services;
         }
