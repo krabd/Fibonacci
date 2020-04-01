@@ -8,9 +8,22 @@ namespace Fibonacci.Core.Services
     {
         public Task<ulong> CalculateNextNumberAsync(ulong currentNumber, CancellationToken token = default)
         {
-            return Task.Run<ulong>(() =>
+            return Task.Run(() =>
             {
-                return 1;
+                ulong firstNumber = 0;
+                ulong secondNumber = 1;
+
+                ulong newNumber = 0;
+
+                while (currentNumber >= newNumber)
+                {
+                    newNumber = firstNumber + secondNumber;
+
+                    firstNumber = secondNumber;
+                    secondNumber = newNumber;
+                }
+
+                return newNumber;
             }, token);
         }
     }
