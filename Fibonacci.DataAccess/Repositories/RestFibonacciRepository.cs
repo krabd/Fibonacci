@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,23 +9,17 @@ namespace Fibonacci.DataAccess.Repositories
 {
     public class RestFibonacciRepository : IFibonacciRepository
     {
-        private string _uri;
+        private readonly HttpClient _client;
 
-        public void SetUri(string uri)
+        public RestFibonacciRepository(HttpClient client)
         {
-            _uri = uri;
+            _client = client;
         }
 
         public async Task SendNextNumberAsync(ulong number, CancellationToken token = default)
         {
-            if (string.IsNullOrEmpty(_uri))
-                throw new ArgumentException("Не задан Uri для запроса по API");
-
-            using (var client = new HttpClient())
-            {
-                var content = new StringContent(JsonConvert.SerializeObject(number), Encoding.UTF8, "application/json");
-                await client.PostAsync(_uri, content, token);
-            }
+            var content = new StringContent(JsonConvert.SerializeObject(number), Encoding.UTF8, "application/json");
+            await _client.PostAsync(_client.BaseAddress, content, token);
         }
     }
 }

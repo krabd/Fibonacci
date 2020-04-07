@@ -30,11 +30,9 @@ namespace Fibonacci.MQ
                 return rabbitSettings;
             });
 
-            services.AddTransient<IFibonacciRepository>(p =>
+            services.AddHttpClient<IFibonacciRepository, RestFibonacciRepository>(client =>
             {
-                var repository = new RestFibonacciRepository();
-                repository.SetUri(ConfigurationManager.AppSettings.Get("apiUri"));
-                return repository;
+                client.BaseAddress = new Uri(ConfigurationManager.AppSettings.Get("apiUri"));
             });
 
             var provider = startupService.BuildProvider(services);
