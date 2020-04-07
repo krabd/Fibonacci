@@ -9,17 +9,19 @@ namespace Fibonacci.DataAccess.Repositories
 {
     public class RestFibonacciRepository : IFibonacciRepository
     {
+        private readonly string _baseUrl;
         private readonly HttpClient _client;
 
-        public RestFibonacciRepository(HttpClient client)
+        public RestFibonacciRepository(IHttpClientFactory httpClientFactory, string baseUrl)
         {
-            _client = client;
+            _baseUrl = baseUrl;
+            _client = httpClientFactory.CreateClient();
         }
 
         public async Task SendNextNumberAsync(ulong number, CancellationToken token = default)
         {
             var content = new StringContent(JsonConvert.SerializeObject(number), Encoding.UTF8, "application/json");
-            await _client.PostAsync(_client.BaseAddress, content, token);
+            await _client.PostAsync(_baseUrl, content, token);
         }
     }
 }

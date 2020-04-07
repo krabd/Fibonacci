@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
 using EasyNetQ.Management.Client;
 using Fibonacci.Core.Extensions;
@@ -30,10 +32,10 @@ namespace Fibonacci.MQ
                 return rabbitSettings;
             });
 
-            services.AddHttpClient<IFibonacciRepository, RestFibonacciRepository>(client =>
-            {
-                client.BaseAddress = new Uri(ConfigurationManager.AppSettings.Get("apiUri"));
-            });
+            services.AddHttpClient();
+            services.AddTransient<IFibonacciRepository, RestFibonacciRepository>(p =>
+                new RestFibonacciRepository(p.Resolve<IHttpClientFactory>(),
+                    ConfigurationManager.AppSettings.Get("apiUri")));
 
             var provider = startupService.BuildProvider(services);
 
